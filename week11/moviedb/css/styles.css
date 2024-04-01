@@ -1,0 +1,16 @@
+main{
+    display:flex;
+    justify-content: space-between;
+}
+
+.card{
+    margin: 1rem 0;
+    box-shadow: 0 4px 6px rgba(86, 54, 54, 0.3);
+}
+
+.searchResults, .details{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    /* width: 50vw; */
+}

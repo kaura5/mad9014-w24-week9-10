@@ -1,6 +1,7 @@
 const apiKey = "840f53a055d11884c36946d30fdd8e68";
 
 function init() {
+  window.addEventListener("popstate", popin);
   loadData();
 }
 
@@ -16,6 +17,7 @@ function loadData() {
     })
     .then((data) => {
       console.log(data);
+      history.pushState(data, null, "#trending");
       displayMovie(data.results);
     })
     .catch((error) => {
@@ -25,6 +27,7 @@ function loadData() {
 
 function displayMovie(results) {
   let div = document.querySelector(".searchResults");
+  div.innerHTML = "";
 
   let df = new DocumentFragment();
 
@@ -38,7 +41,7 @@ function displayMovie(results) {
     title.textContent = item.title;
     poster.setAttribute(
       "src",
-      `https://image.tmdb.org/t/p/w500${item.poster_path}`
+      `https://image.tmdb.org/t/p/w500${item.backdrop_path}`
     );
     poster.setAttribute("alt", `${item.title} poster`);
     card.setAttribute("data-id", item.id);
@@ -46,8 +49,59 @@ function displayMovie(results) {
 
     df.append(card);
   });
-  //   div.addEventListener("click", showCrew);
+  div.addEventListener("click", showCrew);
   div.append(df);
 }
 
+function showCrew(ev) {
+  console.log(ev.target.closest(".card"));
+  let id = ev.target.closest(".card").getAttribute("data-id");
+
+  if (id) {
+    fetch(`https://api.themoviedb.org/3/movie/${id}/credits?api_key=${apiKey}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(response.statusText);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data);
+        history.pushState(data, null, "#cast");
+        displayCast(data.cast);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+}
+
+function displayCast(cast) {
+  let div = document.querySelector(".searchResults");
+
+  div.innerHTML = "";
+
+  let df = new DocumentFragment();
+  cast.forEach((castMember) => {
+    let card = document.createElement("div");
+    let cardInfo = `
+  <img src="https://image.tmdb.org/t/p/w200/${castMember.profile_path}" alt="poster of ${castMember.name}">
+  <p>Name: ${castMember.name}</p>
+  <p>Character Name: ${castMember.character}</p>
+  `;
+    card.innerHTML = cardInfo;
+    df.append(card);
+  });
+  div.append(df);
+}
+
+function popin(ev) {
+  console.log(ev);
+  console.log(location.hash);
+  if (location.hash === "#trending") {
+    displayMovie(ev.state.results);
+  } else if (location.hash === "#cast") {
+    displayCast(ev.state.cast);
+  }
+}
 window.addEventListener("DOMContentLoaded", init);
