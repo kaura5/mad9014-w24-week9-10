@@ -1,0 +1,21 @@
+header{
+    background-color: rgb(68, 17, 17);
+    padding: 1rem 5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+header h1 {
+    color: aliceblue;
+}
+header a{
+    color: aliceblue;
+    margin: 0 1rem;
+    text-decoration: none;
+    cursor: pointer;
+    padding: 0.5rem;
+}
+.active{
+    background-color: aliceblue;
+    color: rgb(68, 17, 17);
+}
